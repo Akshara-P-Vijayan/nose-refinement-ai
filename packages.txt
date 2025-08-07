@@ -4,7 +4,6 @@ libsm6
 libxext6
 libxrender-dev
 libgomp1
-libgthread-2.0-0
 libgtk-3-0
 build-essential
 cmake
@@ -12,3 +11,7 @@ libopenblas-dev
 liblapack-dev
 libx11-dev
 libgtk-3-dev
+ffmpeg
+libavcodec-dev
+libavformat-dev
+libswscale-dev
