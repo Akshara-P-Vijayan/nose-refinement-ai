@@ -1,0 +1,9 @@
+streamlit
+diffusers
+transformers
+torch
+opencv-python
+scipy
+face_recognition
+matplotlib
+Pillow
