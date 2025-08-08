@@ -15,4 +15,3 @@ ffmpeg
 libavcodec-dev
 libavformat-dev
 libswscale-dev
-python3.10
