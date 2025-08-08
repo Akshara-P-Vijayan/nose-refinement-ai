@@ -30,16 +30,17 @@ def create_enhanced_nose_mask(image_array, landmarks, padding_factor=1.5, blur_r
 # === Load Inpainting Pipeline ===
 @st.cache_resource
 def load_pipeline():
+    device = "cuda" if torch.cuda.is_available() else "cpu"
     pipe = StableDiffusionInpaintPipeline.from_pretrained(
         "runwayml/stable-diffusion-inpainting",
         torch_dtype=torch.float16,
         use_safetensors=True
-    ).to("cuda")
+    ).to(device)
     try:
         pipe.enable_attention_slicing()
         pipe.enable_xformers_memory_efficient_attention()
-    except:
-        pass
+    except Exception as e:
+        st.warning(f"Could not enable memory-efficient attention: {e}")
     return pipe
 
 # === Streamlit UI ===
