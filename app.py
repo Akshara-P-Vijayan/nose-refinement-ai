@@ -31,17 +31,25 @@ def create_enhanced_nose_mask(image_array, landmarks, padding_factor=1.5, blur_r
 @st.cache_resource
 def load_pipeline():
     device = "cuda" if torch.cuda.is_available() else "cpu"
+
+    # Use float16 only if CUDA is available, otherwise float32
+    dtype = torch.float16 if device == "cuda" else torch.float32
+
     pipe = StableDiffusionInpaintPipeline.from_pretrained(
         "runwayml/stable-diffusion-inpainting",
-        torch_dtype=torch.float16,
+        torch_dtype=dtype,
         use_safetensors=True
     ).to(device)
+
     try:
         pipe.enable_attention_slicing()
-        pipe.enable_xformers_memory_efficient_attention()
+        if device == "cuda":
+            pipe.enable_xformers_memory_efficient_attention()
     except Exception as e:
         st.warning(f"Could not enable memory-efficient attention: {e}")
+
     return pipe
+
 
 # === Streamlit UI ===
 st.title("Nose Refinement Inpainting")
@@ -66,7 +74,8 @@ if uploaded_image and positive_prompt and negative_prompt:
                 st.error("Could not generate mask.")
             else:
                 pipe = load_pipeline()
-                generator = torch.Generator(device="cuda").manual_seed(42)
+                generator = torch.Generator(device=pipe.device)  
+                generator.manual_seed(42)
                 result = pipe(
                     prompt=positive_prompt,
                     negative_prompt=negative_prompt,
